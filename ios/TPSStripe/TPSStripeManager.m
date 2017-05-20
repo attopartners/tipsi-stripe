@@ -161,11 +161,12 @@ RCT_EXPORT_METHOD(paymentRequestWithApplePay:(NSArray *)items
     promiseResolver = resolve;
     promiseRejector = reject;
 
-    NSUInteger requiredShippingAddressFields = [self applePayAddressFields:options[@"requiredShippingAddressFields"]];
-    NSUInteger requiredBillingAddressFields = [self applePayAddressFields:options[@"requiredBillingAddressFields"]];
+    //NSUInteger requiredShippingAddressFields = [self applePayAddressFields:options[@"requiredShippingAddressFields"]];
+    //NSUInteger requiredBillingAddressFields = [self applePayAddressFields:options[@"requiredBillingAddressFields"]];
     PKShippingType shippingType = [self applePayShippingType:options[@"shippingType"]];
     NSMutableArray *shippingMethodsItems = options[@"shippingMethods"] ? options[@"shippingMethods"] : [NSMutableArray array];
-    NSString* currencyCode = options[@"currencyCode"] ? options[@"currencyCode"] : @"USD";
+    NSString* currencyCode = options[@"currencyCode"] ? options[@"currencyCode"] : @"GBP";
+    NSString* countryCode = options[@"countryCode"] ? options[@"countryCode"] : @"GB";
 
     NSMutableArray *shippingMethods = [NSMutableArray array];
 
@@ -189,12 +190,13 @@ RCT_EXPORT_METHOD(paymentRequestWithApplePay:(NSArray *)items
 
     PKPaymentRequest *paymentRequest = [Stripe paymentRequestWithMerchantIdentifier:merchantId];
 
-    [paymentRequest setRequiredShippingAddressFields:requiredShippingAddressFields];
-    [paymentRequest setRequiredBillingAddressFields:requiredBillingAddressFields];
+    [paymentRequest setRequiredShippingAddressFields:PKAddressFieldName|PKAddressFieldEmail];
+    [paymentRequest setRequiredBillingAddressFields:PKAddressFieldNone];
     [paymentRequest setPaymentSummaryItems:summaryItems];
     [paymentRequest setShippingMethods:shippingMethods];
     [paymentRequest setShippingType:shippingType];
     [paymentRequest setCurrencyCode:currencyCode];
+    [paymentRequest setCountryCode:countryCode];
 
     if ([Stripe canSubmitPaymentRequest:paymentRequest]) {
         PKPaymentAuthorizationViewController *paymentAuthorizationVC = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:paymentRequest];
